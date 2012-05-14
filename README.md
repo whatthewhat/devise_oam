@@ -1,4 +1,4 @@
-# DeviseOam
+# DeviseOam [![Build Status](https://secure.travis-ci.org/whatthewhat/devise-oam.png)](http://travis-ci.org/whatthewhat/devise-oam)
 
 OAM authentication strategy for devise.
 
