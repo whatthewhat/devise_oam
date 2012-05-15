@@ -11,11 +11,12 @@ module DeviseOam
           failure_message = "OAM authentication failed"
           
           oam_data = request.headers[DeviseOam.oam_header]
+          user_login = oam_data.strip.downcase
 
           if oam_data.blank?
             fail!(failure_message)
           else
-            user = find_or_create_user(oam_data)
+            user = find_or_create_user(user_login)
             success!(user)
           end
         end
