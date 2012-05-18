@@ -48,4 +48,15 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal strategy.result, :success
     assert_not_nil strategy.user
   end
+  
+  test "creates new user when create_user_if_not_found is true" do
+    DeviseOam.create_user_if_not_found = true
+    DeviseOam.create_user_method = "create_oam_user"
+  
+    strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo" }))
+    strategy._run!
+    
+    assert_equal strategy.result, :success
+    assert_not_nil strategy.user
+  end
 end

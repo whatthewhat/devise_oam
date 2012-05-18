@@ -2,6 +2,9 @@ module DeviseOam
   module Devise
     module Strategies
       class HeaderAuthenticatable < ::Devise::Strategies::Base
+        # delegate DeviseOam.create_user_method, :to => DeviseOam.user_class
+        # delegate :find, :to => DeviseOam.user_class
+        
         def valid?
           # this strategy is only valid if there is a DeviseOam.oam_header header in the request
           request.headers[DeviseOam.oam_header]
@@ -24,13 +27,12 @@ module DeviseOam
         private
         
         def find_or_create_user(login)
-          if DeviseOam.create_user_if_not_found
-            find_method = "find_or_create_by_#{DeviseOam.user_login_field}"
-          else
-            find_method = "find_by_#{DeviseOam.user_login_field}"
+          user = DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => login }).first
+          if user.nil? && DeviseOam.create_user_if_not_found
+            user = DeviseOam.user_class.send(DeviseOam.create_user_method, { DeviseOam.user_login_field.to_sym => login })
           end
-          
-          DeviseOam.user_class.send(find_method, login)
+
+          user
         end
       end
     end

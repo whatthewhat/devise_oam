@@ -8,6 +8,7 @@ module DeviseOam
   mattr_accessor :user_class
   mattr_accessor :user_login_field
   mattr_accessor :create_user_if_not_found
+  mattr_accessor :create_user_method
   
   def self.setup
     yield self

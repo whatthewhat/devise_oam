@@ -7,4 +7,11 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
   # attr_accessible :title, :body
+  
+  def self.create_oam_user(attributes)
+    user = User.new
+    user.email = attributes[:email]
+    
+    user.save validate:false
+  end
 end
