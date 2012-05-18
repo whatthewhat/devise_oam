@@ -3,8 +3,7 @@ include TestHelpers
 
 class DeviseOamTest < ActiveSupport::TestCase
   def setup
-    DeviseOam.user_class = "User"
-    DeviseOam.user_login_field = "email"
+    set_default_settings
   end
   
   test "truth" do
@@ -32,7 +31,6 @@ class DeviseOamTest < ActiveSupport::TestCase
   end
   
   test "authentication fails when oam_header is blank" do
-    DeviseOam.oam_header = "OAM_REMOTE_USER"
     strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "" }))
     strategy._run!
     
@@ -41,8 +39,8 @@ class DeviseOamTest < ActiveSupport::TestCase
   end
   
   test "authentication succeeds when oam_header is present and not blank" do
-    DeviseOam.oam_header = "OAM_REMOTE_USER"
-    DeviseOam.create_user_if_not_found = true
+    user = DeviseOam.user_class.new(DeviseOam.user_login_field => "foo")
+    user.save(validate: false)
 
     strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo" }))
     strategy._run!
