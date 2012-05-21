@@ -48,10 +48,49 @@ class DeviseOamTest < ActiveSupport::TestCase
   
   test "creates new user when create_user_if_not_found is true" do
     DeviseOam.create_user_if_not_found = true
-    DeviseOam.create_user_method = "create_oam_user"
     @strategy._run!
     
     assert_equal @strategy.result, :success
     assert_not_nil @strategy.user
+  end
+  
+  test "correctly parses ldap roles" do
+    ldap_roles = 'role-1,Role-2'
+    roles = ["role-1", "role-2"]
+    
+    authenticatable = DeviseOam::AuthenticatableEntity.new("login", ldap_roles)
+    
+    assert_equal authenticatable.ldap_roles, roles
+  end
+  
+  test "sets user roles on creation" do
+    roles = ["role-1", "role-2"]
+    DeviseOam.create_user_if_not_found = true
+    
+    strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(
+      env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo", "HTTP_#{DeviseOam.ldap_header}" => roles.join(",") })
+    )
+    strategy._run!
+    
+    user = DeviseOam.user_class.where(DeviseOam.user_login_field => "foo").first
+    
+    assert_equal strategy.result, :success
+    assert_equal strategy.authenticatable.ldap_roles, roles
+    assert_equal user.roles, roles
+  end
+  
+  test "updates excisting user roles" do
+    roles = ["role-2", "role-3"]
+    user = DeviseOam.user_class.new(DeviseOam.user_login_field => "foo", :roles => ["role-1", "role-2"])
+    user.save(validate: false)
+    
+    strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(
+      env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo", "HTTP_#{DeviseOam.ldap_header}" => roles.join(",") })
+    )
+    strategy._run!
+    
+    assert_equal strategy.result, :success
+    assert_equal strategy.authenticatable.ldap_roles, roles
+    assert_equal user.reload.roles, roles
   end
 end
