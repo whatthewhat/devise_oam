@@ -11,6 +11,7 @@ module DeviseOam
   mattr_accessor :create_user_if_not_found
   mattr_accessor :create_user_method
   mattr_accessor :ldap_header
+  mattr_accessor :roles_setter
   
   def self.setup
     yield self

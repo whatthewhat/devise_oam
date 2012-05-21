@@ -13,6 +13,7 @@ module TestHelpers
       config.user_login_field = "email"
       config.create_user_if_not_found = false
       config.create_user_method = "create_oam_user"
+      config.roles_setter = "update_roles"
     end
   end
 end
