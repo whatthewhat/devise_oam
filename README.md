@@ -28,14 +28,35 @@ DeviseOam.setup do |config|
   config.oam_header = "OAM_REMOTE_USER"
   config.user_class = "User"
   config.user_login_field = "email"
-  config.create_user_if_not_found = true
+  config.create_user_if_not_found = false
 end
 ```
 ### Settings explained:
 * `oam_header` - HTTP header that triggers the authentication strategy, should have user login as a value
 * `user_class` - class of your devise user model
 * `user_login_field` - login field for the user model (should be unique)
-* `create_user_if_not_found` - if set to true this will create a new user if no user was found (use with caution)
+* `create_user_if_not_found` - if set to true this will create a new user if no user was found
+* `create_user_method` - method in the `user_class` to handle new user creation
+* `ldap_header` - HTTP header for LDAP roles
+* `roles_setter` - method in the `user_class` to handle updating user roles
+
+### Automatic user creation
+If you need to automatically create new users based on `oam_header` you need to do the following:
+
+1. Set `create_user_if_not_found` setting to `true`
+2. Add a method to your user class that will accept a hash of params (`user_login_field` and also `:roles` if you are using LDAP roles) and create a new user
+3. In the initializer set the `create_user_method` setting to the method you've just added
+
+For an example see `test/dummy` app.
+
+### LDAP roles
+To use LDAP roles parsing:
+
+1. Set `ldap_header` setting to the HTTP header with roles (should be a comma separated string)
+2. Add a method to your user class that will accept an array with roles and update the user
+3. In the initializer set `roles_setter` setting to the method you've just created
+
+For an example see `test/dummy` app.
 
 ## Links
 * [Devise](https://github.com/plataformatec/devise)
