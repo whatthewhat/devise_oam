@@ -38,7 +38,7 @@ module DeviseOam
           
           if user.nil? && DeviseOam.create_user_if_not_found
             user = DeviseOam.user_class.send(DeviseOam.create_user_method, { DeviseOam.user_login_field.to_sym => @authenticatable.login, :roles => @authenticatable.ldap_roles })
-          elsif set_roles?
+          elsif user && set_roles?
             user.send(DeviseOam.roles_setter, @authenticatable.ldap_roles)
           end
           
