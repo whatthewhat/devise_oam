@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = DeviseOam::VERSION
   s.authors     = ["Mikhail Topolskiy"]
   s.email       = ["mikhail.topolskiy@gmail.com"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/whatthewhat/devise-oam"
   s.summary     = "OAM authentication strategy for devise."
   s.description = "Authentication strategy for devise based on headers, passed by Oracle Access Manager."
 
