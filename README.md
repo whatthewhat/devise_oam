@@ -1,4 +1,4 @@
-# DeviseOam [![Build Status](https://secure.travis-ci.org/whatthewhat/devise-oam.png)](http://travis-ci.org/whatthewhat/devise-oam)
+# DeviseOam [![Build Status](https://secure.travis-ci.org/whatthewhat/devise_oam.png)](http://travis-ci.org/whatthewhat/devise_oam)
 
 OAM authentication strategy for devise.
 
@@ -8,7 +8,7 @@ integration with Oracle Access Manager.
 ## Installation
 In **Rails 3**, add this to your Gemfile and run the `bundle` command.
 
-    gem "devise-oam", github: "whatthewhat/devise-oam"
+    gem "devise_oam", github: "whatthewhat/devise_oam"
 
 ## Usage
 1) Add the `HeaderAuthenticatable` strategy in devise initializer `config/initializers/devise.rb`:
@@ -21,7 +21,7 @@ config.warden do |manager|
 end
 ```
 
-2) Set `DeviseOam` settings (i.e. in `config/initializers/devise-oam.rb`):
+2) Set `DeviseOam` settings (i.e. in `config/initializers/devise_oam.rb`):
 
 ```ruby
 DeviseOam.setup do |config|

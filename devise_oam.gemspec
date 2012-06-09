@@ -5,11 +5,11 @@ require "devise_oam/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "devise-oam"
+  s.name        = "devise_oam"
   s.version     = DeviseOam::VERSION
   s.authors     = ["Mikhail Topolskiy"]
   s.email       = ["mikhail.topolskiy@gmail.com"]
-  s.homepage    = "https://github.com/whatthewhat/devise-oam"
+  s.homepage    = "https://github.com/whatthewhat/devise_oam"
   s.summary     = "OAM authentication strategy for devise."
   s.description = "Authentication strategy for devise based on headers, passed by Oracle Access Manager."
 
