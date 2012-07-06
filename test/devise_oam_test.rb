@@ -93,4 +93,12 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal strategy.authenticatable.ldap_roles, roles
     assert_equal user.reload.roles, roles
   end
+  
+  test "AuthenticatableEntity login is case sensitive" do
+    auth1 = DeviseOam::AuthenticatableEntity.new("Login")
+    auth2 = DeviseOam::AuthenticatableEntity.new("loGin")
+    
+    assert_equal auth1.login, "Login"
+    assert_equal auth2.login, "loGin"
+  end
 end
