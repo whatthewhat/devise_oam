@@ -12,7 +12,7 @@ module DeviseOam
         def authenticate!         
           oam_data = request.headers[DeviseOam.oam_header]
           ldap_data = request.headers[DeviseOam.ldap_header] if DeviseOam.ldap_header
-          attributes = get_attributes if DeviseOam.attr_headers
+          attributes = get_attributes
 
           if oam_data.blank?
             fail!("OAM authentication failed")
@@ -60,10 +60,14 @@ module DeviseOam
         end
 
         def get_attributes
-          hash = DeviseOam.attr_headers.inject({}) {|attr_hash, attr_header|
-            attr_hash[attr_header.underscore] = request.headers[attr_header] if request.headers[attr_header]
-            attr_hash
-          }
+          if DeviseOam.attr_headers
+            hash = DeviseOam.attr_headers.inject({}) {|attr_hash, attr_header|
+              attr_hash[attr_header.underscore] = request.headers[attr_header] if request.headers[attr_header]
+              attr_hash
+            }
+          else
+            {}
+          end
         end
       end
     end
