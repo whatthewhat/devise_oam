@@ -11,15 +11,13 @@ module DeviseOam
 
         def authenticate!         
           oam_data = request.headers[DeviseOam.oam_header]
-          
-          if DeviseOam.ldap_header
-            ldap_data = request.headers[DeviseOam.ldap_header] || ""
-          end
+          ldap_data = request.headers[DeviseOam.ldap_header] if DeviseOam.ldap_header
+          attributes = get_attributes if DeviseOam.attr_headers
 
           if oam_data.blank?
             fail!("OAM authentication failed")
           else
-            @authenticatable = AuthenticatableEntity.new(oam_data, ldap_data)
+            @authenticatable = AuthenticatableEntity.new(oam_data, ldap_data, attributes)
             user = find_or_create_user
             success!(user)
           end
@@ -32,14 +30,40 @@ module DeviseOam
         private
         
         def find_or_create_user
-          user = DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => @authenticatable.login }).first
+          user = find_user
           if user.nil? && DeviseOam.create_user_if_not_found
-            user = DeviseOam.user_class.send(DeviseOam.create_user_method, { DeviseOam.user_login_field.to_sym => @authenticatable.login, :roles => @authenticatable.ldap_roles })
+            user = create_user
           elsif user && set_roles?
-            user.send(DeviseOam.roles_setter, @authenticatable.ldap_roles)
+            update_user(user)
           end
           
           user
+        end
+
+        def find_user
+          DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => @authenticatable.login }).first
+        end
+
+        def create_user
+          DeviseOam.user_class.send(DeviseOam.create_user_method, {
+            DeviseOam.user_login_field.to_sym => @authenticatable.login,
+            roles: @authenticatable.ldap_roles 
+          })
+        end
+
+        def update_user(user)
+          if @authenticatable.attributes.any?
+            user.send(DeviseOam.update_user_method, @authenticatable.ldap_roles, @authenticatable.attributes)
+          else
+            user.send(DeviseOam.update_user_method, @authenticatable.ldap_roles)
+          end
+        end
+
+        def get_attributes
+          hash = DeviseOam.attr_headers.inject({}) {|attr_hash, attr_header|
+            attr_hash[attr_header.underscore] = request.headers[attr_header] if request.headers[attr_header]
+            attr_hash
+          }
         end
       end
     end

@@ -74,4 +74,20 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal strategy.authenticatable.ldap_roles, roles
     assert_equal user.reload.roles, roles
   end
+
+  test "sets additional attributes on update" do
+    user = DeviseOam.user_class.new(DeviseOam.user_login_field => "foo", roles: ["role"])
+    user.save(validate: false)
+    DeviseOam.attr_headers = %w(USER_EMAIL)
+    DeviseOam.update_user_method = :update_user
+
+    strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(
+      env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo",
+      "HTTP_#{DeviseOam.ldap_header}" => "role",
+      "HTTP_USER_EMAIL" => "value" })
+    )
+    strategy._run!
+
+    assert_equal user.reload.email, "value"
+  end
 end

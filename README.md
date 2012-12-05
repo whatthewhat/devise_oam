@@ -38,7 +38,10 @@ end
 * `create_user_if_not_found` - if set to true this will create a new user if no user was found
 * `create_user_method` - method in the `user_class` to handle new user creation
 * `ldap_header` - HTTP header for LDAP roles
-* `roles_setter` - method in the `user_class` to handle updating user roles
+* `update_user_method` - method in the `user_class` to handle updating user roles and additional attributes
+* `attr_headers` - headers with additional attributes that are passed to `update_user_method`
+
+`roles_setter` should still work, but is deprecated
 
 ### Automatic user creation
 If you need to automatically create new users based on `oam_header` you need to do the following:
@@ -54,7 +57,7 @@ To use LDAP roles parsing:
 
 1. Set `ldap_header` setting to the HTTP header with roles (should be a comma separated string)
 2. Add a method to your user class that will accept an array with roles and update the user
-3. In the initializer set `roles_setter` setting to the method you've just created
+3. In the initializer set `update_user_method` setting to the method you've just created
 
 For an example see `test/dummy` app.
 

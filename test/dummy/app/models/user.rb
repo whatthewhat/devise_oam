@@ -32,4 +32,10 @@ class User < ActiveRecord::Base
     self.roles = roles
     self.save validate:false
   end
+
+  def update_user(roles, additional_attributes)
+    self.roles = roles
+    self.email = additional_attributes['user_email']
+    self.save validate:false
+  end
 end

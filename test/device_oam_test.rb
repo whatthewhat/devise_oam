@@ -11,4 +11,10 @@ class DeviseOamTest < ActiveSupport::TestCase
       assert_equal DeviseOam, config
     end
   end
+
+  test "update_user_method is set to roles_setter by default" do
+    DeviseOam.update_user_method = nil
+    DeviseOam.roles_setter = :roles_setter
+    assert_equal DeviseOam.update_user_method, :roles_setter
+  end
 end

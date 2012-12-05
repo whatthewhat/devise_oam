@@ -18,7 +18,4 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal auth1.login, "Login"
     assert_equal auth2.login, "loGin"
   end
-
-  test "#" do
-  end
 end
