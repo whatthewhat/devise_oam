@@ -8,16 +8,6 @@ class DeviseOamTest < ActiveSupport::TestCase
     @strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo" }))
   end
   
-  test "truth" do
-    assert_kind_of Module, DeviseOam
-  end
-  
-  test "setup block yields self" do
-    DeviseOam.setup do |config|
-      assert_equal DeviseOam, config
-    end
-  end
-  
   test "strategy is valid when specified header is in the request" do
     assert @strategy.valid?, "Expected strategy to be valid since oam_header is in the request"
   end
@@ -54,15 +44,6 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_not_nil @strategy.user
   end
   
-  test "correctly parses ldap roles" do
-    ldap_roles = 'role-1,Role-2'
-    roles = ["role-1", "role-2"]
-    
-    authenticatable = DeviseOam::AuthenticatableEntity.new("login", ldap_roles)
-    
-    assert_equal authenticatable.ldap_roles, roles
-  end
-  
   test "sets user roles on creation" do
     roles = ["role-1", "role-2"]
     DeviseOam.create_user_if_not_found = true
@@ -92,13 +73,5 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal strategy.result, :success
     assert_equal strategy.authenticatable.ldap_roles, roles
     assert_equal user.reload.roles, roles
-  end
-  
-  test "AuthenticatableEntity login is case sensitive" do
-    auth1 = DeviseOam::AuthenticatableEntity.new("Login")
-    auth2 = DeviseOam::AuthenticatableEntity.new("loGin")
-    
-    assert_equal auth1.login, "Login"
-    assert_equal auth2.login, "loGin"
   end
 end

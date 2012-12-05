@@ -4,24 +4,22 @@ module DeviseOam
       class HeaderAuthenticatable < ::Devise::Strategies::Base
         attr_reader :authenticatable
         
+        # strategy is only valid if there is a DeviseOam.oam_header header in the request
         def valid?
-          # this strategy is only valid if there is a DeviseOam.oam_header header in the request
           request.headers[DeviseOam.oam_header]
         end
 
         def authenticate!         
-          failure_message = "OAM authentication failed"
-          
           oam_data = request.headers[DeviseOam.oam_header]
+          
           if DeviseOam.ldap_header
             ldap_data = request.headers[DeviseOam.ldap_header] || ""
           end
 
           if oam_data.blank?
-            fail!(failure_message)
+            fail!("OAM authentication failed")
           else
             @authenticatable = AuthenticatableEntity.new(oam_data, ldap_data)
-            
             user = find_or_create_user
             success!(user)
           end
@@ -35,7 +33,6 @@ module DeviseOam
         
         def find_or_create_user
           user = DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => @authenticatable.login }).first
-          
           if user.nil? && DeviseOam.create_user_if_not_found
             user = DeviseOam.user_class.send(DeviseOam.create_user_method, { DeviseOam.user_login_field.to_sym => @authenticatable.login, :roles => @authenticatable.ldap_roles })
           elsif user && set_roles?

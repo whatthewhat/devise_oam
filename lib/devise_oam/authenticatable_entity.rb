@@ -2,7 +2,7 @@ module DeviseOam
   class AuthenticatableEntity
     attr_accessor :login, :ldap_roles
     
-    def initialize(login, ldap_roles = nil)
+    def initialize(login, ldap_roles = nil, attributes = nil)
       @login = login
       @ldap_roles = parse_ldap_roles(ldap_roles) if ldap_roles
     end
