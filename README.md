@@ -8,7 +8,7 @@ integration with Oracle Access Manager.
 ## Installation
 In **Rails 3**, add this to your Gemfile and run the `bundle` command.
 
-    gem "devise_oam", "~> 0.0.2"
+    gem "devise_oam", "~> 0.0.3"
 
 ## Usage
 1) Add the `HeaderAuthenticatable` strategy in devise initializer `config/initializers/devise.rb`:
