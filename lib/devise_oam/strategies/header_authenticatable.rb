@@ -62,7 +62,7 @@ module DeviseOam
         def get_attributes
           if DeviseOam.attr_headers
             hash = DeviseOam.attr_headers.inject({}) {|attr_hash, attr_header|
-              attr_hash[attr_header.underscore] = request.headers[attr_header] if request.headers[attr_header]
+              attr_hash[attr_header.underscore.to_sym] = request.headers[attr_header] if request.headers[attr_header]
               attr_hash
             }
           else
