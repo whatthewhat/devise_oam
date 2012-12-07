@@ -59,6 +59,23 @@ class DeviseOamTest < ActiveSupport::TestCase
     assert_equal strategy.authenticatable.ldap_roles, roles
     assert_equal user.roles, roles
   end
+
+  test "sets additional attributes on creation" do
+    DeviseOam.attr_headers = %w(ADDITIONAL_ATTRIBUTE)
+    DeviseOam.create_user_if_not_found = true
+    
+    strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(
+      env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo",
+      "HTTP_#{DeviseOam.ldap_header}" => "role",
+      "HTTP_ADDITIONAL_ATTRIBUTE" => "value" })
+    )
+    strategy._run!
+    
+    user = User.where(email: "foo").first
+    
+    assert_equal strategy.result, :success
+    assert_equal "value", user.additional_attribute
+  end
   
   test "updates excisting user roles" do
     roles = ["role-2", "role-3"]
@@ -78,16 +95,16 @@ class DeviseOamTest < ActiveSupport::TestCase
   test "sets additional attributes on update" do
     user = DeviseOam.user_class.new(DeviseOam.user_login_field => "foo", roles: ["role"])
     user.save(validate: false)
-    DeviseOam.attr_headers = %w(USER_EMAIL)
+    DeviseOam.attr_headers = %w(ADDITIONAL_ATTRIBUTE)
     DeviseOam.update_user_method = :update_user
 
     strategy = DeviseOam::Devise::Strategies::HeaderAuthenticatable.new(
       env_with_params("/", {}, { "HTTP_#{DeviseOam.oam_header}" => "foo",
       "HTTP_#{DeviseOam.ldap_header}" => "role",
-      "HTTP_USER_EMAIL" => "value" })
+      "HTTP_ADDITIONAL_ATTRIBUTE" => "value" })
     )
     strategy._run!
 
-    assert_equal user.reload.email, "value"
+    assert_equal "value", user.reload.additional_attribute
   end
 end

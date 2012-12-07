@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
     user = User.new
     user.email = attributes[:email]
     user.roles = attributes[:roles] if attributes[:roles]
+    user.additional_attribute = attributes[:additional_attribute] if attributes[:additional_attribute]
     
     user.save validate:false
   end
@@ -35,7 +36,7 @@ class User < ActiveRecord::Base
 
   def update_user(roles, additional_attributes)
     self.roles = roles
-    self.email = additional_attributes['user_email']
+    self.additional_attribute = additional_attributes[:additional_attribute]
     self.save validate:false
   end
 end

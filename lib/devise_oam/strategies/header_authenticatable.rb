@@ -24,7 +24,7 @@ module DeviseOam
         end
         
         def set_roles?
-          !DeviseOam.ldap_header.blank? && @authenticatable.ldap_roles
+          !DeviseOam.ldap_header.blank? && authenticatable.ldap_roles
         end
         
         private
@@ -41,21 +41,23 @@ module DeviseOam
         end
 
         def find_user
-          DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => @authenticatable.login }).first
+          DeviseOam.user_class.where({ DeviseOam.user_login_field.to_sym => authenticatable.login }).first
         end
 
         def create_user
-          DeviseOam.user_class.send(DeviseOam.create_user_method, {
-            DeviseOam.user_login_field.to_sym => @authenticatable.login,
-            roles: @authenticatable.ldap_roles 
-          })
+          attributes = {
+            DeviseOam.user_login_field.to_sym => authenticatable.login,
+            roles: authenticatable.ldap_roles
+          }.merge(authenticatable.attributes)
+
+          DeviseOam.user_class.send(DeviseOam.create_user_method, attributes)
         end
 
         def update_user(user)
-          if @authenticatable.attributes.any?
-            user.send(DeviseOam.update_user_method, @authenticatable.ldap_roles, @authenticatable.attributes)
+          if authenticatable.attributes.any?
+            user.send(DeviseOam.update_user_method, authenticatable.ldap_roles, authenticatable.attributes)
           else
-            user.send(DeviseOam.update_user_method, @authenticatable.ldap_roles)
+            user.send(DeviseOam.update_user_method, authenticatable.ldap_roles)
           end
         end
 
