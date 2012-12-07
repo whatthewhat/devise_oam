@@ -8,7 +8,7 @@ integration with Oracle Access Manager.
 ## Installation
 In **Rails 3**, add this to your Gemfile and run the `bundle` command.
 
-    gem "devise_oam", "~> 0.0.4"
+    gem "devise_oam", "~> 0.0.5"
 
 ## Usage
 1) Add the `HeaderAuthenticatable` strategy in devise initializer `config/initializers/devise.rb`:
@@ -39,7 +39,7 @@ end
 * `create_user_method` - method in the `user_class` to handle new user creation
 * `ldap_header` - HTTP header for LDAP roles
 * `update_user_method` - method in the `user_class` to handle updating user roles and additional attributes
-* `attr_headers` - headers with additional attributes that are passed to `update_user_method`
+* `attr_headers` - headers with additional attributes that are passed to `create_user_method` and `update_user_method`
 
 `roles_setter` should still work, but is deprecated
 
@@ -60,6 +60,30 @@ To use LDAP roles parsing:
 3. In the initializer set `update_user_method` setting to the method you've just created
 
 For an example see `test/dummy` app.
+
+### Passing additional attributes
+```ruby
+DeviseOam.setup do |config|
+  ...
+  config.user_class = "User"
+  config.create_user_method = :create_oam_user
+  config.update_user_method = :update_oam_user
+  config.attr_headers = %w(ATTR_1, ATTR_2) # http headers with attributes
+end
+
+class User
+  ...
+  def create_oam_user(attributes)
+    attributes[:attr_1] # --> value from ATTR_1 header
+  end
+
+  def update_oam_user(roles, attributes)
+    attributes[:attr_1] # --> value from ATTR_1 header
+  end
+  ...
+end
+
+```
 
 ## Links
 * [Devise](https://github.com/plataformatec/devise)
