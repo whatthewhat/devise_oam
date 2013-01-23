@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     devise_oam (0.0.5)
-      devise (>= 2.0)
-      rails (>= 3.1.0)
+      devise (>= 1.4.9)
+      rails (>= 3.0)
 
 GEM
   remote: http://rubygems.org/
