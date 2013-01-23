@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    devise_oam (0.0.5)
+    devise_oam (0.0.6)
       devise (>= 1.4.9)
       rails (>= 3.0)
 
